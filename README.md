@@ -1,62 +1,63 @@
-# URL Shortner Using React and Material UI
+# 🚀 URL Shortner Using React and Material UI
 
 A fully client-side URL shortener built with React and Material UI. Shorten multiple URLs with optional custom shortcodes and expiration times. All data is stored in localStorage, and redirection/statistics are handled via React Router. All actions are logged using middleware (no console.log used).
 
 ---
 
 ## ✨ Features
-🚀 Shorten up to 5 URLs at once
+- Shorten up to 5 URLs at once
 
-✏️ Optional custom shortcode and validity period (default: 30 minutes)
+- Optional custom shortcode and validity period (default: 30 minutes)
 
-🧠 Unique shortcode generation (client-managed)
+- Unique shortcode generation (client-managed)
 
-🔁 Client-side redirection using React Router
+- Client-side redirection using React Router
 
-📊 Statistics page showing:
+- Statistics page showing:
 
-Original & shortened URLs
+- Original & shortened URLs
 
-Creation & expiration times
+- Creation & expiration times
 
-Click count with timestamps
+- Click count with timestamps
 
-💾 Persistent data with localStorage
+- Persistent data with localStorage
 
-📋 Logging middleware for all key actions (no direct console logging)
+- Logging middleware for all key actions (no direct console logging)
 
 ---
 
 ## 📁 Project Structure
 
-src/
-├── App.jsx          // Main app logic, routing, pages & components
-├── main.jsx         // Entry point, initializes React Router
-└── logging.js       // Middleware for logging actions using environment variables
+src/<br>
+├── App.jsx         &nbsp; // Main app logic, routing, pages & components<br>
+├── main.jsx        &nbsp; // Entry point, initializes React Router<br>
+└── logging.js      &nbsp; // Middleware for logging actions using environment variables
 
 ---
 
 ## 🌐 Deployment
 This app is fully static and can be deployed to any static hosting service like:
 
-GitHub Pages
+- GitHub Pages
 
-Netlify
+- Netlify
 
-Vercel
+- Vercel
 
-Firebase Hosting
+- Firebase Hosting
 
 ---
 
 ## 🧪 Future Enhancements
-Custom domain support
 
-Analytics dashboard (charts, device/browser info)
+- Custom domain support
 
-Password-protected links
+- Analytics dashboard (charts, device/browser info)
 
-QR code generation
+- Password-protected links
+
+- QR code generation
 
 ---
 
