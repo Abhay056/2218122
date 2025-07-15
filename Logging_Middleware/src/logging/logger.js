@@ -1,5 +1,3 @@
-// src/logging.js
-
 let cachedToken = null;
 let tokenExpiry = null;
 
@@ -27,7 +25,7 @@ async function fetchToken() {
       rollNo: ROLLNO,
       accessCode: ACCESS_CODE,
       clientID: CLIENT_ID,
-      clientSecret: CLIENT_SECRET,
+      clientSecret: CLIENT_SECRET
     }),
   });
 
@@ -37,7 +35,7 @@ async function fetchToken() {
 
   const data = await response.json();
   cachedToken = data.access_token;
-  tokenExpiry = Date.now() + 50 * 60 * 1000; // 50 minutes
+  tokenExpiry = Date.now() + 50 * 60 * 1000;
   return cachedToken;
 }
 
@@ -48,11 +46,11 @@ export async function log(stack, level, pkg, message) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({ stack, level, package: pkg, message }),
     });
   } catch (err) {
-    // No console logging allowed per requirements
+    console.error("Logger error:", err);
   }
 }

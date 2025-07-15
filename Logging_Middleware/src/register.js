@@ -1,5 +1,3 @@
-// src/register.js
-
 export async function registerUser() {
   try {
     const response = await fetch(
@@ -10,11 +8,11 @@ export async function registerUser() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: "ARMAANRAWAT.22021662@gehu.ac.in",
-          name: "Armaan Rawat",
-          mobileNo: "7983573326",
-          githubUsername: "ArmaanRawat",
-          rollNo: "2218460",
+          email: "abjun504@gmail.com",
+          name: "Abhay Bahuguna",
+          mobileNo: "9458124662",
+          githubUsername: "Abhay056",
+          rollNo: "2218122",
           accessCode: "QAhDUr",
         }),
       }
@@ -29,7 +27,6 @@ export async function registerUser() {
     console.log("✅ Registration successful!");
     console.log("Your credentials:", data);
 
-    // Suggestion: copy the values and store in your .env manually
     alert("Check console for clientID and clientSecret!");
   } catch (err) {
     console.error("❌ Registration failed:", err);

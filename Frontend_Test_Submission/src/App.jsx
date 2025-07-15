@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, useParams, useNavigate } from "react-router-dom";
-import { log } from "./logging.js";
 import {
   Box,
   Button,
@@ -10,9 +9,25 @@ import {
   Typography,
   Paper,
   IconButton,
+  ThemeProvider,
+  createTheme,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#3f8efc",
+    },
+    secondary: {
+      main: "#646cff",
+    },
+  },
+  shape: {
+    borderRadius: 8,
+  },
+});
 
 function generateShortcode(existingShortcodes) {
   const chars =
@@ -70,7 +85,7 @@ function ShortenerPage() {
 
   const validateInputs = () => {
     const existingShortcodes = new Set(results.map((r) => r.shortcode));
-    const errs = inputs.map((input, idx) => {
+    const errs = inputs.map((input) => {
       const err = {};
       if (!input.longUrl) err.longUrl = "URL required";
       else if (!validateUrl(input.longUrl)) err.longUrl = "Invalid URL";
@@ -115,7 +130,6 @@ function ShortenerPage() {
     e.preventDefault();
     setSubmitting(true);
     if (!validateInputs()) {
-      await log("ShortenerPage", "error", "frontend", "Validation failed");
       setSubmitting(false);
       return;
     }
@@ -135,12 +149,6 @@ function ShortenerPage() {
         clicks: [],
       };
       newResults.push(newEntry);
-      await log(
-        "ShortenerPage",
-        "info",
-        "frontend",
-        `Shortened: ${longUrl} as ${code}`
-      );
     }
     setResults([...results, ...newResults]);
     setInputs([{ longUrl: "", validity: "", shortcode: "" }]);
@@ -149,11 +157,18 @@ function ShortenerPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
+    <Container maxWidth="md" sx={{ mt: 6, mb: 4 }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
         URL Shortener
       </Typography>
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Paper
+        elevation={4}
+        sx={{
+          p: 4,
+          borderRadius: 3,
+          background: "linear-gradient(135deg, #f8faff, #eef3fc)",
+        }}
+      >
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             {inputs.map((input, idx) => (
@@ -168,6 +183,8 @@ function ShortenerPage() {
                     error={!!errors[idx]?.longUrl}
                     helperText={errors[idx]?.longUrl}
                     fullWidth
+                    size="small"
+                    sx={{ backgroundColor: "#fff" }}
                   />
                   <TextField
                     label="Validity (min)"
@@ -177,7 +194,8 @@ function ShortenerPage() {
                     }
                     error={!!errors[idx]?.validity}
                     helperText={errors[idx]?.validity || "Default: 30"}
-                    sx={{ width: 120 }}
+                    size="small"
+                    sx={{ width: 120, backgroundColor: "#fff" }}
                   />
                   <TextField
                     label="Custom Shortcode"
@@ -187,12 +205,11 @@ function ShortenerPage() {
                     }
                     error={!!errors[idx]?.shortcode}
                     helperText={errors[idx]?.shortcode || "Optional"}
-                    sx={{ width: 180 }}
+                    size="small"
+                    sx={{ width: 180, backgroundColor: "#fff" }}
                   />
                   {inputs.length > 1 && (
-                    <IconButton
-                      onClick={() => handleRemove(idx)}
-                      aria-label="remove">
+                    <IconButton onClick={() => handleRemove(idx)} color="error">
                       <RemoveIcon />
                     </IconButton>
                   )}
@@ -200,15 +217,37 @@ function ShortenerPage() {
               </Grid>
             ))}
             <Grid item xs={12}>
-              <Box display="flex" alignItems="center" gap={2}>
+              <Box display="flex" gap={2}>
                 <Button
                   variant="outlined"
                   startIcon={<AddIcon />}
                   onClick={handleAdd}
-                  disabled={inputs.length >= 5}>
+                  disabled={inputs.length >= 5}
+                  sx={{
+                    borderRadius: 2,
+                    px: 3,
+                    textTransform: "none",
+                  }}
+                >
                   Add URL
                 </Button>
-                <Button type="submit" variant="contained" disabled={submitting}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={submitting}
+                  sx={{
+                    background: "linear-gradient(135deg, #3f8efc, #5f6cfe)",
+                    color: "white",
+                    fontWeight: "bold",
+                    px: 4,
+                    borderRadius: 2,
+                    textTransform: "none",
+                    boxShadow: "0 4px 10px rgba(63,142,252,0.3)",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #5f6cfe, #3f8efc)",
+                    },
+                  }}
+                >
                   Shorten
                 </Button>
               </Box>
@@ -216,37 +255,49 @@ function ShortenerPage() {
           </Grid>
         </form>
       </Paper>
-      <Typography variant="h5" gutterBottom>
+
+      <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
         Shortened URLs
       </Typography>
-      <Paper sx={{ p: 2 }}>
+      <Paper sx={{ p: 3, borderRadius: 3 }}>
         {results.length === 0 ? (
           <Typography>No URLs shortened yet.</Typography>
         ) : (
           <Grid container spacing={2}>
             {results.map((r, idx) => (
               <Grid item xs={12} key={idx}>
-                <Box display="flex" alignItems="center" gap={2}>
-                  <Typography variant="body1" sx={{ minWidth: 120 }}>
-                    <a
-                      href={`/${r.shortcode}`}
-                      target="_blank"
-                      rel="noopener noreferrer">
-                      {window.location.origin}/{r.shortcode}
-                    </a>
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ flex: 1, wordBreak: "break-all" }}>
-                    {r.longUrl}
-                  </Typography>
-                  <Typography variant="caption">
-                    Created: {new Date(r.createdAt).toLocaleString()}
-                  </Typography>
-                  <Typography variant="caption">
-                    Expires: {new Date(r.expiresAt).toLocaleString()}
-                  </Typography>
-                </Box>
+                <Paper
+                  elevation={2}
+                  sx={{
+                    p: 2,
+                    backgroundColor: "#fff",
+                    borderRadius: 2,
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                  }}
+                >
+                  <Box display="flex" flexDirection="column" gap={1}>
+                    <Typography variant="body2" fontWeight="bold">
+                      <a
+                        href={`/${r.shortcode}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {window.location.origin}/{r.shortcode}
+                      </a>
+                    </Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      {r.longUrl}
+                    </Typography>
+                    <Box display="flex" justifyContent="space-between">
+                      <Typography variant="caption">
+                        Created: {new Date(r.createdAt).toLocaleString()}
+                      </Typography>
+                      <Typography variant="caption">
+                        Expires: {new Date(r.expiresAt).toLocaleString()}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Paper>
               </Grid>
             ))}
           </Grid>
@@ -264,27 +315,18 @@ function StatsPage() {
   }, []);
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
+    <Container maxWidth="md" sx={{ mt: 6 }}>
       <Typography variant="h4" gutterBottom>
         URL Statistics
       </Typography>
-      <Paper sx={{ p: 3 }}>
+      <Paper sx={{ p: 3, borderRadius: 3 }}>
         {urls.length === 0 ? (
           <Typography>No URLs shortened yet.</Typography>
         ) : (
           <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Box display="flex" fontWeight="bold" gap={2}>
-                <Box sx={{ minWidth: 120 }}>Shortcode</Box>
-                <Box sx={{ flex: 1 }}>Original URL</Box>
-                <Box sx={{ minWidth: 120 }}>Created</Box>
-                <Box sx={{ minWidth: 120 }}>Expires</Box>
-                <Box sx={{ minWidth: 80 }}>Clicks</Box>
-              </Box>
-            </Grid>
             {urls.map((r, idx) => (
               <Grid item xs={12} key={idx}>
-                <Box display="flex" alignItems="center" gap={2}>
+                <Box display="flex" gap={2}>
                   <Box sx={{ minWidth: 120 }}>{r.shortcode}</Box>
                   <Box sx={{ flex: 1, wordBreak: "break-all" }}>
                     {r.longUrl}
@@ -329,7 +371,6 @@ function RedirectHandler() {
       setMessage("This link has expired.");
       return;
     }
-    // Log the click
     const click = { timestamp: now.toISOString() };
     entry.clicks = entry.clicks || [];
     entry.clicks.push(click);
@@ -344,7 +385,7 @@ function RedirectHandler() {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Paper sx={{ p: 4, textAlign: "center" }}>
+      <Paper sx={{ p: 4, textAlign: "center", borderRadius: 3 }}>
         <Typography variant="h5" gutterBottom>
           {status === "loading" && "Checking link..."}
           {status === "redirecting" && "Redirecting..."}
@@ -355,7 +396,8 @@ function RedirectHandler() {
           <Button
             variant="contained"
             sx={{ mt: 2 }}
-            onClick={() => navigate("/")}>
+            onClick={() => navigate("/")}
+          >
             Go Home
           </Button>
         )}
@@ -365,17 +407,14 @@ function RedirectHandler() {
 }
 
 function App() {
-  useEffect(() => {
-    log("App", "info", "frontend", "App loaded");
-  }, []);
-  const [count, setCount] = useState(0);
-
   return (
-    <Routes>
-      <Route path="/" element={<ShortenerPage />} />
-      <Route path="/stats" element={<StatsPage />} />
-      <Route path=":shortcode" element={<RedirectHandler />} />
-    </Routes>
+    <ThemeProvider theme={theme}>
+      <Routes>
+        <Route path="/" element={<ShortenerPage />} />
+        <Route path="/stats" element={<StatsPage />} />
+        <Route path="/:shortcode" element={<RedirectHandler />} />
+      </Routes>
+    </ThemeProvider>
   );
 }
 
